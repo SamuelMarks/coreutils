@@ -1,0 +1,27 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define _GL_CONFIG_H_INCLUDED 1
+#define HAVE_CONFIG_H 1
+
+#cmakedefine HAVE_SYS_TYPES_H 1
+#cmakedefine HAVE_SYS_STAT_H 1
+#cmakedefine HAVE_UNISTD_H 1
+#cmakedefine HAVE_FCNTL_H 1
+#cmakedefine HAVE_SYSLOG_H 1
+
+#cmakedefine HAVE_CHROOT 1
+#cmakedefine HAVE_GETHOSTID 1
+#cmakedefine HAVE_SIGSUSPEND 1
+#cmakedefine HAVE_FCLONEFILEAT 1
+#cmakedefine HAVE_GETATTRAT 1
+#cmakedefine HAVE_INITGROUPS 1
+#cmakedefine HAVE_SYSLOG 1
+#cmakedefine HAVE_NICE 1
+
+#endif
+
+#define isubase64(ch) isbase64(ch)
+#define isubase32(ch) isbase32(ch)
+
+#endif /* CONFIG_H */

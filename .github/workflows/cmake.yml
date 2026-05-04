@@ -1,0 +1,73 @@
+name: CMake Build and Test
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    name: ${{ matrix.os }} (${{ matrix.compiler }} + ${{ matrix.libc }})
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            libc: glibc
+            container: null
+          - os: ubuntu-latest
+            compiler: gcc
+            libc: musl
+            container: alpine:latest
+          - os: ubuntu-latest
+            compiler: clang
+            libc: musl
+            container: alpine:latest
+
+    steps:
+      - name: Install dependencies (Alpine / musl)
+        if: matrix.container == 'alpine:latest'
+        run: |
+          apk add --no-cache bash cmake make perl gawk coreutils bison gettext gettext-dev texinfo gperf autoconf automake rsync curl git patch xz acl-dev libcap-dev gmp-dev
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            apk add --no-cache gcc g++ musl-dev
+          elif [ "${{ matrix.compiler }}" = "clang" ]; then
+            apk add --no-cache clang musl-dev
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install dependencies (Ubuntu / glibc)
+        if: matrix.os == 'ubuntu-latest' && matrix.container == null
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake gcc g++ make perl bash gawk bison autopoint gettext texinfo gperf autoconf automake rsync wget curl git patch xz-utils libacl1-dev libcap-dev libgmp-dev
+
+
+      - name: Configure CMake
+        run: |
+          if [ "${{ matrix.compiler }}" = "appleclang" ] || [ "${{ matrix.compiler }}" = "clang" ]; then
+             export CC="clang"
+             export CXX="clang++"
+          elif [ "${{ matrix.compiler }}" = "gcc" ]; then
+             export CC="gcc"
+             export CXX="g++"
+          else
+             export CC="${{ matrix.compiler }}"
+             export CXX="${{ matrix.compiler }}++"
+          fi
+          cmake -S cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure --parallel 4
