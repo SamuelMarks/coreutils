@@ -126,17 +126,29 @@ static int my_system_fd(const char *cmdline, int capture_fd) {
             args[argc] = NULL;
             
             if (in_file) {
-                int fd = open(in_file, O_RDONLY);
-                if (fd >= 0) { dup2(fd, STDIN_FILENO); close(fd); }
+                if (strcmp(in_file, "&-") == 0) {
+                    close(STDIN_FILENO);
+                } else {
+                    int fd = open(in_file, O_RDONLY);
+                    if (fd >= 0) { dup2(fd, STDIN_FILENO); close(fd); }
+                }
             }
             if (out_file) {
-                int flags = O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC);
-                int fd = open(out_file, flags, 0644);
-                if (fd >= 0) { dup2(fd, STDOUT_FILENO); close(fd); }
+                if (strcmp(out_file, "&-") == 0) {
+                    close(STDOUT_FILENO);
+                } else {
+                    int flags = O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC);
+                    int fd = open(out_file, flags, 0644);
+                    if (fd >= 0) { dup2(fd, STDOUT_FILENO); close(fd); }
+                }
             }
             if (err_file) {
-                int fd = open(err_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-                if (fd >= 0) { dup2(fd, STDERR_FILENO); close(fd); }
+                if (strcmp(err_file, "&-") == 0) {
+                    close(STDERR_FILENO);
+                } else {
+                    int fd = open(err_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd >= 0) { dup2(fd, STDERR_FILENO); close(fd); }
+                }
             }
             if (err_to_out) {
                 dup2(STDOUT_FILENO, STDERR_FILENO);

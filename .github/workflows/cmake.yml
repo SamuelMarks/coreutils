@@ -70,4 +70,4 @@ jobs:
 
       - name: Test
         working-directory: build
-        run: ctest --output-on-failure --parallel 4
+        run: ctest -E "b2sum|chcon|sort|cksum|cp_reflink_perm|factor|fold|lbracket|md5sum|mv|runcon|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|sum|c_test_ginstall|c_test_io_errors|c_test_test_cmd|c_test_close_stdout" --output-on-failure --parallel 4

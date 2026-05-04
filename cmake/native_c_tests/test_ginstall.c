@@ -59,11 +59,11 @@ TEST test_ginstall_C() {
     // destination file exists
     char out[1024];
     exec_capture("ginstall -Cv -m0644 a b", out, sizeof(out));
-    ASSERT_EQ_FMT(0, strlen(out), "%zu"); // should be empty output
+    ASSERT_EQ_FMT((size_t)0, strlen(out), "%zu"); // should be empty output
     
     // destination file exists (long option)
     exec_capture("ginstall -v --compare -m0644 a b", out, sizeof(out));
-    ASSERT_EQ_FMT(0, strlen(out), "%zu");
+    ASSERT_EQ_FMT((size_t)0, strlen(out), "%zu");
     
     // option -C ignored if any non-permission mode should be set
     exec_capture("ginstall -Cv -m2755 a b", out, sizeof(out));
@@ -76,7 +76,7 @@ TEST test_ginstall_C() {
     
     // second run should be empty
     exec_capture("ginstall -Cv -m0644 a b", out, sizeof(out));
-    ASSERT_EQ_FMT(0, strlen(out), "%zu");
+    ASSERT_EQ_FMT((size_t)0, strlen(out), "%zu");
     
     PASS();
 }
