@@ -15,6 +15,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: macos-latest
+            compiler: appleclang
+            libc: darwin
+            container: null
           - os: ubuntu-latest
             compiler: gcc
             libc: glibc
@@ -43,6 +47,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install bison gettext texinfo gperf autoconf automake rsync wget curl patch xz
 
       - name: Install dependencies (Ubuntu / glibc)
         if: matrix.os == 'ubuntu-latest' && matrix.container == null

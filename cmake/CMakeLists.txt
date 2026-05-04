@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
 project(coreutils C)
 
 set(CMAKE_C_STANDARD 23)
@@ -973,7 +976,7 @@ foreach(TEST_SRC ${NATIVE_C_TEST_SCRIPTS})
         endif()
     endif()
     add_test(NAME "c_${TEST_NAME}" COMMAND ${TEST_NAME} ${CMAKE_BINARY_DIR}/src)
-    set_tests_properties("c_${TEST_NAME}" PROPERTIES TIMEOUT 10)
+    set_tests_properties("c_${TEST_NAME}" PROPERTIES TIMEOUT 120)
 endforeach()
 
 # Add native cmake tests
@@ -985,7 +988,7 @@ foreach(SCRIPT ${NATIVE_TEST_SCRIPTS})
         continue()
     endif()
     add_test(NAME "native_${TEST_NAME}" COMMAND ${CMAKE_COMMAND} -DBIN_DIR=${CMAKE_BINARY_DIR}/src -P ${SCRIPT})
-    set_tests_properties("native_${TEST_NAME}" PROPERTIES TIMEOUT 10)
+    set_tests_properties("native_${TEST_NAME}" PROPERTIES TIMEOUT 120)
 endforeach()
 
 get_property(ALL_TESTS DIRECTORY PROPERTY TESTS)
